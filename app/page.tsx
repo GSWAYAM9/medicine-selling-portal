@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
 import Link from 'next/link'
@@ -10,14 +10,9 @@ import { Button } from '@/components/ui/button'
 export default function Home() {
   const { user } = useAuth()
   const router = useRouter()
-  const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
-    setIsClient(true)
-  }, [])
-
-  useEffect(() => {
-    if (isClient && user) {
+    if (user) {
       if (user.role === 'customer') {
         router.push('/medicines')
       } else if (user.role === 'doctor') {
@@ -26,22 +21,17 @@ export default function Home() {
         router.push('/pharmacist/dashboard')
       }
     }
-  }, [user, router, isClient])
-
-  if (!isClient || user) {
-    return null
-  }
+  }, [user, router])
 
   return (
     <div className="min-h-screen bg-background overflow-hidden">
-      {/* Navigation */}
       <nav className="fixed w-full top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-primary via-primary to-accent rounded-xl flex items-center justify-center shadow-lg">
               <Droplet className="w-6 h-6 text-primary-foreground" />
             </div>
-            <span className="font-serif text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">MediHub</span>
+            <span className="text-xl font-serif font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">MediHub</span>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/login">
@@ -54,9 +44,7 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Hero Section */}
       <section className="pt-32 pb-24 px-4 sm:px-6 lg:px-8 relative">
-        {/* Background decoration */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-primary/20 to-accent/10 rounded-full blur-3xl -z-10"></div>
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-tr from-accent/20 to-primary/10 rounded-full blur-3xl -z-10"></div>
 
@@ -64,7 +52,7 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
               <div className="inline-flex items-center px-4 py-2 bg-secondary/60 border border-accent/30 rounded-full">
-                <span className="text-sm font-semibold text-primary">✨ Premium Healthcare Experience</span>
+                <span className="text-sm font-semibold text-primary">Premium Healthcare Experience</span>
               </div>
 
               <div className="space-y-6">
@@ -90,7 +78,6 @@ export default function Home() {
                 </Link>
               </div>
 
-              {/* Trust badges */}
               <div className="flex items-center gap-6 pt-6">
                 <div className="flex items-center gap-2">
                   <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -107,7 +94,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Premium Hero Visual */}
             <div className="relative h-96 lg:h-[500px]">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 rounded-3xl border border-border/50"></div>
               <div className="relative bg-gradient-to-br from-card via-secondary/20 to-card rounded-3xl p-12 border border-border/80 backdrop-blur-sm overflow-hidden">
@@ -116,7 +102,7 @@ export default function Home() {
                 
                 <div className="space-y-8">
                   {[
-                    { icon: '💊', label: '2,500+ Medicines', value: 'In Stock' },
+                    { icon: '💊', label: '52+ Medicines', value: 'In Stock' },
                     { icon: '👨‍⚕️', label: '500+ Doctors', value: 'Available' },
                     { icon: '🚚', label: 'Same-Day', value: 'Delivery' }
                   ].map((stat, i) => (
@@ -136,7 +122,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
       <section id="features" className="py-24 px-4 sm:px-6 lg:px-8 border-y border-border">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
@@ -152,42 +137,36 @@ export default function Home() {
                 icon: Shield,
                 title: 'Verified Excellence',
                 desc: 'Pharmaceuticals from certified manufacturers, verified by licensed experts.',
-                gradient: 'from-primary/10 to-transparent'
               },
               {
                 icon: Zap,
                 title: 'Lightning Fast',
                 desc: 'Same-day and next-day delivery options for urgent pharmaceutical needs.',
-                gradient: 'from-accent/10 to-transparent'
               },
               {
                 icon: Heart,
                 title: 'Expert Guidance',
                 desc: 'Licensed doctors and pharmacists available for personalized consultation.',
-                gradient: 'from-primary/10 to-accent/10'
               },
               {
                 icon: Lock,
                 title: 'Maximum Security',
                 desc: 'Bank-level encryption protecting your personal and payment information.',
-                gradient: 'from-accent/10 to-transparent'
               },
               {
                 icon: Package,
                 title: 'Discreet & Safe',
                 desc: 'Premium packaging ensuring privacy and product integrity on delivery.',
-                gradient: 'from-primary/10 to-transparent'
               },
               {
                 icon: Droplet,
                 title: 'Premium Selection',
                 desc: 'Curated collection of prescription and OTC medications for all needs.',
-                gradient: 'from-accent/10 to-primary/10'
               }
             ].map((feature, idx) => {
               const Icon = feature.icon
               return (
-                <div key={idx} className={`group relative p-8 bg-gradient-to-br ${feature.gradient} backdrop-blur-sm rounded-2xl border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10`}>
+                <div key={idx} className={`group relative p-8 bg-gradient-to-br from-primary/5 to-transparent backdrop-blur-sm rounded-2xl border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10`}>
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity duration-300"></div>
                   <div className="relative">
                     <div className="w-14 h-14 bg-gradient-to-br from-primary/20 to-accent/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
@@ -203,87 +182,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* User Roles Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-5xl lg:text-6xl font-serif font-bold text-foreground mb-16 text-center">
-            Designed for Every Role
-          </h2>
-
-          <div className="grid lg:grid-cols-3 gap-8">
-            {[
-              {
-                title: 'Patient Portal',
-                icon: '👤',
-                features: ['Browse 2,500+ medicines', 'Upload prescriptions', 'Real-time order tracking', 'Order history'],
-                badge: 'For Everyone'
-              },
-              {
-                title: 'Doctor Portal',
-                icon: '👨‍⚕️',
-                features: ['Issue digital prescriptions', 'Manage patient prescriptions', 'View analytics', 'Prescription tracking'],
-                badge: 'Premium',
-                highlight: true
-              },
-              {
-                title: 'Pharmacist Portal',
-                icon: '💼',
-                features: ['Inventory management', 'Order processing', 'Smart stock alerts', 'Revenue analytics'],
-                badge: 'Pro'
-              }
-            ].map((role, idx) => (
-              <div key={idx} className={`relative group rounded-2xl border transition-all duration-300 overflow-hidden ${
-                role.highlight
-                  ? 'bg-gradient-to-br from-primary/10 via-accent/5 to-background border-primary/50 lg:scale-105 shadow-2xl shadow-primary/20'
-                  : 'bg-card border-border/50 hover:border-primary/50'
-              }`}>
-                {role.highlight && (
-                  <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
-                    <span className="px-4 py-1.5 bg-gradient-to-r from-primary to-accent text-primary-foreground rounded-full text-sm font-bold shadow-lg">
-                      ⭐ Most Popular
-                    </span>
-                  </div>
-                )}
-
-                <div className="p-8 relative">
-                  <div className="text-5xl mb-6 group-hover:scale-110 transition-transform duration-300">{role.icon}</div>
-                  <h3 className="text-2xl font-bold text-foreground mb-2">{role.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-8">{role.badge}</p>
-                  
-                  <ul className="space-y-4 mb-8">
-                    {role.features.map((feature, i) => (
-                      <li key={i} className="flex items-start gap-3 text-muted-foreground group/item">
-                        <div className="w-2 h-2 bg-gradient-to-r from-primary to-accent rounded-full mt-2 flex-shrink-0"></div>
-                        <span className="group-hover/item:text-foreground transition-colors">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Link href="/login" className="block">
-                    <Button className={`w-full transition-all duration-300 ${
-                      role.highlight
-                        ? 'bg-gradient-to-r from-primary to-accent hover:shadow-lg'
-                        : ''
-                    }`} variant={role.highlight ? 'default' : 'outline'}>
-                      Get Started <ArrowRight className="ml-2 w-4 h-4" />
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 border-y border-border">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8 text-center">
             {[
-              { number: '50K+', label: 'Active Users' },
-              { number: '2.5K+', label: 'Medicines' },
+              { number: '52+', label: 'Medicines' },
               { number: '500+', label: 'Healthcare Pros' },
-              { number: '99.9%', label: 'Uptime' }
+              { number: '99.9%', label: 'Uptime' },
+              { number: '24/7', label: 'Support' }
             ].map((stat, i) => (
               <div key={i} className="space-y-2">
                 <div className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
@@ -296,7 +202,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="relative bg-gradient-to-br from-primary via-primary/90 to-accent rounded-3xl p-16 border border-primary/50 overflow-hidden">
@@ -319,7 +224,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-card/50 backdrop-blur-sm border-t border-border px-4 sm:px-6 lg:px-8 py-16">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-5 gap-12 mb-12">

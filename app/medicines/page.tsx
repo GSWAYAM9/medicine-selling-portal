@@ -83,17 +83,14 @@ export default function MedicinesPage() {
       <Header />
       <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          {/* Page Header */}
           <div className="mb-12">
             <h1 className="text-5xl font-serif font-bold text-foreground mb-3">Premium Medicines</h1>
-            <p className="text-lg text-muted-foreground">Curated collection of verified pharmaceuticals</p>
+            <p className="text-lg text-muted-foreground">Curated collection of {mockMedicines.length} verified pharmaceuticals</p>
           </div>
 
           <div className="grid lg:grid-cols-4 gap-8">
-            {/* Sidebar Filters */}
             <div className="lg:col-span-1">
               <div className="sticky top-24 space-y-6">
-                {/* Search */}
                 <div className="space-y-3">
                   <label className="text-sm font-semibold text-foreground flex items-center gap-2">
                     <Search className="w-4 h-4" />
@@ -107,7 +104,6 @@ export default function MedicinesPage() {
                   />
                 </div>
 
-                {/* Categories */}
                 <div className="space-y-3">
                   <label className="text-sm font-semibold text-foreground flex items-center gap-2">
                     <Filter className="w-4 h-4" />
@@ -130,7 +126,6 @@ export default function MedicinesPage() {
                   </div>
                 </div>
 
-                {/* Price Range */}
                 <div className="space-y-3">
                   <label className="text-sm font-semibold text-foreground">Price Range</label>
                   <div className="space-y-2">
@@ -149,7 +144,6 @@ export default function MedicinesPage() {
                   </div>
                 </div>
 
-                {/* Sort */}
                 <div className="space-y-3">
                   <label className="text-sm font-semibold text-foreground">Sort By</label>
                   <select
@@ -166,7 +160,6 @@ export default function MedicinesPage() {
               </div>
             </div>
 
-            {/* Medicines Grid */}
             <div className="lg:col-span-3">
               <div className="mb-6 flex items-center justify-between">
                 <p className="text-sm font-semibold text-foreground">
@@ -179,19 +172,16 @@ export default function MedicinesPage() {
                   {filteredMedicines.map(medicine => (
                     <Link key={medicine.id} href={`/medicines/detail?id=${medicine.id}`}>
                       <div className="group relative bg-card rounded-2xl border border-border/50 overflow-hidden hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 h-full flex flex-col cursor-pointer">
-                        {/* Premium Badge */}
                         {medicine.rating >= 4.5 && (
                           <div className="absolute top-4 right-4 z-10 bg-gradient-to-r from-primary to-accent px-3 py-1 rounded-full">
-                            <span className="text-xs font-bold text-primary-foreground">⭐ Premium</span>
+                            <span className="text-xs font-bold text-primary-foreground">Premium</span>
                           </div>
                         )}
 
-                        {/* Medicine Image Area */}
                         <div className="p-8 bg-gradient-to-br from-primary/5 to-accent/5 flex items-center justify-center min-h-48 group-hover:from-primary/10 group-hover:to-accent/10 transition-colors">
                           <div className="text-5xl group-hover:scale-110 transition-transform duration-300">💊</div>
                         </div>
 
-                        {/* Medicine Info */}
                         <div className="p-6 flex-1 flex flex-col">
                           <h3 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
                             {medicine.name}
@@ -199,7 +189,6 @@ export default function MedicinesPage() {
 
                           <p className="text-xs text-muted-foreground mb-3">{medicine.manufacturer}</p>
 
-                          {/* Rating */}
                           <div className="flex items-center gap-2 mb-4">
                             <div className="flex gap-0.5">
                               {Array.from({ length: 5 }).map((_, i) => (
@@ -216,14 +205,12 @@ export default function MedicinesPage() {
                             {medicine.description}
                           </p>
 
-                          {/* Prescription Badge */}
                           {medicine.requiresPrescription && (
                             <div className="mb-3 px-3 py-1 bg-accent/10 border border-accent/30 rounded-lg">
                               <p className="text-xs font-semibold text-accent">Prescription Required</p>
                             </div>
                           )}
 
-                          {/* Footer with Price and Stock */}
                           <div className="flex items-center justify-between pt-4 border-t border-border/50">
                             <div>
                               <p className="text-sm text-muted-foreground">Price</p>
