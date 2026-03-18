@@ -78,7 +78,7 @@ export default function CheckoutPage() {
     return medicine?.requiresPrescription
   })
 
-  const total = getTotalPrice()
+  const total = getCartTotal()
   const tax = total * 0.08
   const finalTotal = total + tax
 
@@ -141,7 +141,7 @@ export default function CheckoutPage() {
                   <div className="text-center p-4 bg-background rounded-xl border border-border/50">
                     <Package className="w-6 h-6 text-primary mx-auto mb-2" />
                     <p className="text-sm text-muted-foreground">Items Ordered</p>
-                    <p className="text-2xl font-bold text-foreground">{getTotalItems()}</p>
+                    <p className="text-2xl font-bold text-foreground">{cart.length}</p>
                   </div>
                   <div className="text-center p-4 bg-background rounded-xl border border-border/50">
                     <Truck className="w-6 h-6 text-accent mx-auto mb-2" />
