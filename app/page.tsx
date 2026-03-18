@@ -1,5 +1,7 @@
 'use client'
 
+// Ultra-premium home page - all errors fixed
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
 import Link from 'next/link'
@@ -10,15 +12,17 @@ export default function Home() {
   const { user } = useAuth()
   const router = useRouter()
 
-  if (user) {
-    if (user.role === 'customer') {
-      router.push('/medicines')
-    } else if (user.role === 'doctor') {
-      router.push('/prescriptions')
-    } else if (user.role === 'pharmacist') {
-      router.push('/pharmacist/dashboard')
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'customer') {
+        router.push('/medicines')
+      } else if (user.role === 'doctor') {
+        router.push('/prescriptions')
+      } else if (user.role === 'pharmacist') {
+        router.push('/pharmacist/dashboard')
+      }
     }
-  }
+  }, [user, router])
 
   return (
     <div className="min-h-screen bg-background overflow-hidden">

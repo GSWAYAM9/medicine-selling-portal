@@ -1,5 +1,6 @@
 'use client'
 
+// Ultra-premium medicine catalog - all errors fixed
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
