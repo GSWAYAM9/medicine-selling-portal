@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
 import { useCart } from '@/lib/cart-context'
-import { medicines } from '@/lib/mock-data'
+import { mockMedicines } from '@/lib/mock-data'
 import Link from 'next/link'
 import { ArrowLeft, Star, Shield, TrendingUp, Heart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -19,7 +19,7 @@ export default function MedicineDetail() {
   const [quantity, setQuantity] = useState(1)
   const [isWishlisted, setIsWishlisted] = useState(false)
 
-  const medicine = medicines.find(m => m.id === medicineId)
+  const medicine = mockMedicines.find(m => m.id === medicineId)
 
   if (!medicine) {
     return (
@@ -191,7 +191,7 @@ export default function MedicineDetail() {
         <div className="mt-16 pt-12 border-t border-border">
           <h2 className="text-3xl font-bold text-foreground mb-8">Similar Medicines</h2>
           <div className="grid md:grid-cols-3 gap-6">
-            {medicines
+            {mockMedicines
               .filter(m => m.id !== medicineId && m.category === medicine.category)
               .slice(0, 3)
               .map(med => (

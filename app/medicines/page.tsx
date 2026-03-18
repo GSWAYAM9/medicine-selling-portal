@@ -4,13 +4,14 @@ import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
 import { useCart } from '@/lib/cart-context'
-import { medicines } from '@/lib/mock-data'
+import { mockMedicines } from '@/lib/mock-data'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Header } from '@/components/header'
 import { ShoppingCart, Search, AlertCircle, Filter, Star } from 'lucide-react'
 
 export default function MedicinesPage() {
+  // Fixed import - using mockMedicines instead of medicines
   const { user, isAuthenticated } = useAuth()
   const { addToCart } = useCart()
   const [searchQuery, setSearchQuery] = useState('')
@@ -20,12 +21,12 @@ export default function MedicinesPage() {
   const [addedItems, setAddedItems] = useState<Set<string>>(new Set())
 
   const categories = useMemo(() => {
-    const cats = [...new Set(medicines.map(m => m.category))]
+    const cats = [...new Set(mockMedicines.map(m => m.category))]
     return ['All Categories', ...cats]
   }, [])
 
   const filteredMedicines = useMemo(() => {
-    let result = medicines.filter(medicine => {
+    let result = mockMedicines.filter(medicine => {
       const matchesSearch = medicine.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            medicine.manufacturer.toLowerCase().includes(searchQuery.toLowerCase())
       const matchesCategory = selectedCategory === 'All Categories' || medicine.category === selectedCategory

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
 import { useCart } from '@/lib/cart-context'
-import { medicines } from '@/lib/mock-data'
+import { mockMedicines } from '@/lib/mock-data'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -74,7 +74,7 @@ export default function CheckoutPage() {
   }
 
   const requiresPrescription = cart.some(item => {
-    const medicine = medicines.find(m => m.id === item.medicineId)
+    const medicine = mockMedicines.find(m => m.id === item.medicineId)
     return medicine?.requiresPrescription
   })
 
@@ -272,7 +272,7 @@ export default function CheckoutPage() {
                   
                   <div className="space-y-3 mb-6 pb-6 border-b border-border">
                     {cart.map(item => {
-                      const medicine = medicines.find(m => m.id === item.medicineId)
+                      const medicine = mockMedicines.find(m => m.id === item.medicineId)
                       if (!medicine) return null
                       return (
                         <div key={item.medicineId} className="flex justify-between text-sm">
@@ -339,7 +339,7 @@ export default function CheckoutPage() {
                 
                 <div className="space-y-4 mb-6 pb-6 border-b border-border/50">
                   {cart.map(item => {
-                    const medicine = medicines.find(m => m.id === item.medicineId)
+                    const medicine = mockMedicines.find(m => m.id === item.medicineId)
                     if (!medicine) return null
                     return (
                       <div key={item.medicineId} className="text-sm">
