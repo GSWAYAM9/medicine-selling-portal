@@ -1,6 +1,5 @@
 'use client'
 
-// Ultra-premium medicine catalog - all errors fixed
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
@@ -12,7 +11,6 @@ import { Header } from '@/components/header'
 import { ShoppingCart, Search, AlertCircle, Filter, Star } from 'lucide-react'
 
 export default function MedicinesPage() {
-  // Fixed import - using mockMedicines instead of medicines
   const { user, isAuthenticated } = useAuth()
   const { addToCart } = useCart()
   const [searchQuery, setSearchQuery] = useState('')
