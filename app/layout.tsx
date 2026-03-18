@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { AuthProvider } from '@/lib/auth-context'
@@ -9,9 +9,10 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'MediHub - Online Medicine Portal',
-  description: 'Buy medicines online with prescription support and fast delivery',
+  title: 'MediHub - Online Medicine Portal with Prescription Support',
+  description: 'Buy quality medicines online with prescription support, fast delivery, and expert pharmacist guidance. Browse medicines, track orders, and manage prescriptions in one place.',
   generator: 'v0.app',
+  keywords: ['medicine', 'pharmacy', 'online', 'prescription', 'health', 'medications'],
   icons: {
     icon: [
       {
@@ -29,6 +30,22 @@ export const metadata: Metadata = {
     ],
     apple: '/apple-icon.png',
   },
+  openGraph: {
+    title: 'MediHub - Your Trusted Online Medicine Portal',
+    description: 'Order quality medicines with prescription support and fast delivery',
+    type: 'website',
+  },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: 'white' },
+    { media: '(prefers-color-scheme: dark)', color: 'black' },
+  ],
 }
 
 export default function RootLayout({
@@ -49,3 +66,4 @@ export default function RootLayout({
     </html>
   )
 }
+

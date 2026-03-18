@@ -27,18 +27,30 @@ export function Header() {
           <Link href="/" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
             Home
           </Link>
-          <Link href="/medicines" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-            Shop
-          </Link>
-          {user?.role === 'doctor' && (
-            <Link href="/prescriptions" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-              Prescriptions
-            </Link>
-          )}
-          {user?.role === 'pharmacist' && (
-            <Link href="/admin" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-              Manage
-            </Link>
+          {user && (
+            <>
+              <Link href="/medicines" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+                Shop
+              </Link>
+              {user.role === 'doctor' && (
+                <Link href="/prescriptions" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+                  Prescriptions
+                </Link>
+              )}
+              {user.role === 'pharmacist' && (
+                <>
+                  <Link href="/pharmacist/dashboard" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+                    Dashboard
+                  </Link>
+                  <Link href="/pharmacist/orders" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+                    Orders
+                  </Link>
+                  <Link href="/pharmacist/inventory" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+                    Inventory
+                  </Link>
+                </>
+              )}
+            </>
           )}
         </nav>
 
