@@ -1,51 +1,64 @@
-'use client';
+'use client'
 
-import { useState, useMemo } from 'react';
-import Link from 'next/link';
-import { useAuth } from '@/lib/auth-context';
-import { useCart } from '@/lib/cart-context';
-import { mockMedicines, getMedicineCategories } from '@/lib/mock-data';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Header } from '@/components/header';
-import { ShoppingCart, Search, AlertCircle } from 'lucide-react';
+import { useState, useMemo } from 'react'
+import Link from 'next/link'
+import { useAuth } from '@/lib/auth-context'
+import { useCart } from '@/lib/cart-context'
+import { medicines } from '@/lib/mock-data'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Header } from '@/components/header'
+import { ShoppingCart, Search, AlertCircle, Filter, Star } from 'lucide-react'
 
 export default function MedicinesPage() {
-  const { user, isAuthenticated } = useAuth();
-  const { addToCart } = useCart();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All Categories');
-  const [addedItems, setAddedItems] = useState<Set<string>>(new Set());
+  const { user, isAuthenticated } = useAuth()
+  const { addToCart } = useCart()
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('All Categories')
+  const [priceRange, setPriceRange] = useState([0, 5000])
+  const [sortBy, setSortBy] = useState('popular')
+  const [addedItems, setAddedItems] = useState<Set<string>>(new Set())
 
   const categories = useMemo(() => {
-    return ['All Categories', ...getMedicineCategories()];
-  }, []);
+    const cats = [...new Set(medicines.map(m => m.category))]
+    return ['All Categories', ...cats]
+  }, [])
 
   const filteredMedicines = useMemo(() => {
-    return mockMedicines.filter(medicine => {
+    let result = medicines.filter(medicine => {
       const matchesSearch = medicine.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           medicine.manufacturer.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = selectedCategory === 'All Categories' || medicine.category === selectedCategory;
-      return matchesSearch && matchesCategory;
-    });
-  }, [searchQuery, selectedCategory]);
+                           medicine.manufacturer.toLowerCase().includes(searchQuery.toLowerCase())
+      const matchesCategory = selectedCategory === 'All Categories' || medicine.category === selectedCategory
+      const matchesPrice = medicine.price >= priceRange[0] && medicine.price <= priceRange[1]
+      return matchesSearch && matchesCategory && matchesPrice
+    })
 
-  const handleAddToCart = (medicineId: string, price: number) => {
-    if (!isAuthenticated) {
-      alert('Please login to add items to cart');
-      return;
+    if (sortBy === 'price-low') {
+      result.sort((a, b) => a.price - b.price)
+    } else if (sortBy === 'price-high') {
+      result.sort((a, b) => b.price - a.price)
+    } else if (sortBy === 'rating') {
+      result.sort((a, b) => b.rating - a.rating)
     }
-    addToCart(medicineId, 1, price);
-    setAddedItems(prev => new Set(prev).add(medicineId));
+
+    return result
+  }, [searchQuery, selectedCategory, priceRange, sortBy])
+
+  const handleAddToCart = (medicine: any) => {
+    if (!isAuthenticated) {
+      alert('Please login to add items to cart')
+      return
+    }
+    addToCart(medicine, 1)
+    setAddedItems(prev => new Set(prev).add(medicine.id))
     setTimeout(() => {
       setAddedItems(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(medicineId);
-        return newSet;
-      });
-    }, 2000);
-  };
+        const newSet = new Set(prev)
+        newSet.delete(medicine.id)
+        return newSet
+      })
+    }, 2000)
+  }
 
   if (!isAuthenticated) {
     return (
@@ -62,112 +75,198 @@ export default function MedicinesPage() {
           </div>
         </div>
       </>
-    );
+    )
   }
 
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
+      <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
           {/* Page Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Our Medicines</h1>
-            <p className="text-muted-foreground">Browse our wide selection of quality medicines</p>
+          <div className="mb-12">
+            <h1 className="text-5xl font-serif font-bold text-foreground mb-3">Premium Medicines</h1>
+            <p className="text-lg text-muted-foreground">Curated collection of verified pharmaceuticals</p>
           </div>
 
-          {/* Search and Filters */}
-          <div className="mb-8 space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-              <Input
-                placeholder="Search by medicine name or manufacturer..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+          <div className="grid lg:grid-cols-4 gap-8">
+            {/* Sidebar Filters */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-24 space-y-6">
+                {/* Search */}
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <Search className="w-4 h-4" />
+                    Search
+                  </label>
+                  <Input
+                    placeholder="Medicine name..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="rounded-lg"
+                  />
+                </div>
 
-            {/* Category Filter */}
-            <div className="flex flex-wrap gap-2">
-              {categories.map(category => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    selectedCategory === category
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-secondary text-secondary-foreground hover:bg-muted'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          </div>
+                {/* Categories */}
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <Filter className="w-4 h-4" />
+                    Category
+                  </label>
+                  <div className="space-y-2">
+                    {categories.map(category => (
+                      <button
+                        key={category}
+                        onClick={() => setSelectedCategory(category)}
+                        className={`w-full text-left px-4 py-2 rounded-lg transition-all text-sm ${
+                          selectedCategory === category
+                            ? 'bg-primary text-primary-foreground font-semibold'
+                            : 'bg-card border border-border/50 text-foreground hover:border-primary/50'
+                        }`}
+                      >
+                        {category}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-          {/* Results Count */}
-          <p className="text-sm text-muted-foreground mb-6">
-            Showing {filteredMedicines.length} medicine{filteredMedicines.length !== 1 ? 's' : ''}
-          </p>
-
-          {/* Medicines Grid */}
-          {filteredMedicines.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {filteredMedicines.map(medicine => (
-                <Card key={medicine.id} className="flex flex-col overflow-hidden hover:shadow-lg transition-shadow">
-                  <div className="p-4 flex-1 space-y-3">
-                    <div className="flex justify-between items-start gap-2">
-                      <h3 className="font-semibold text-foreground line-clamp-2">{medicine.name}</h3>
-                      {medicine.requiresPrescription && (
-                        <span className="text-xs bg-destructive/10 text-destructive px-2 py-1 rounded whitespace-nowrap">
-                          Rx
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground">{medicine.manufacturer}</p>
-                      <p className="text-xs text-muted-foreground">{medicine.dosage}</p>
-                    </div>
-
-                    <p className="text-sm text-muted-foreground line-clamp-2">{medicine.description}</p>
-
-                    <div className="flex justify-between items-center pt-2">
-                      <span className="text-lg font-bold text-primary">${medicine.price.toFixed(2)}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {medicine.stock > 0 ? `${medicine.stock} in stock` : 'Out of stock'}
-                      </span>
+                {/* Price Range */}
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-foreground">Price Range</label>
+                  <div className="space-y-2">
+                    <input
+                      type="range"
+                      min="0"
+                      max="5000"
+                      value={priceRange[1]}
+                      onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>₹{priceRange[0]}</span>
+                      <span>₹{priceRange[1]}</span>
                     </div>
                   </div>
+                </div>
 
-                  <button
-                    onClick={() => handleAddToCart(medicine.id, medicine.price)}
-                    disabled={medicine.stock === 0}
-                    className={`w-full py-2 px-4 rounded-b-md font-medium transition-colors flex items-center justify-center gap-2 ${
-                      addedItems.has(medicine.id)
-                        ? 'bg-green-600 text-white'
-                        : medicine.stock > 0
-                        ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                        : 'bg-muted text-muted-foreground cursor-not-allowed'
-                    }`}
+                {/* Sort */}
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-foreground">Sort By</label>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="w-full px-4 py-2 bg-card border border-border/50 rounded-lg text-sm text-foreground"
                   >
-                    <ShoppingCart className="h-4 w-4" />
-                    {addedItems.has(medicine.id) ? 'Added!' : 'Add to Cart'}
-                  </button>
-                </Card>
-              ))}
+                    <option value="popular">Most Popular</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="rating">Top Rated</option>
+                  </select>
+                </div>
+              </div>
             </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground mb-4">No medicines found matching your search.</p>
-              <Button variant="outline" onClick={() => { setSearchQuery(''); setSelectedCategory('All Categories'); }}>
-                Clear Filters
-              </Button>
+
+            {/* Medicines Grid */}
+            <div className="lg:col-span-3">
+              <div className="mb-6 flex items-center justify-between">
+                <p className="text-sm font-semibold text-foreground">
+                  {filteredMedicines.length} medicines found
+                </p>
+              </div>
+
+              {filteredMedicines.length > 0 ? (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredMedicines.map(medicine => (
+                    <Link key={medicine.id} href={`/medicines/detail?id=${medicine.id}`}>
+                      <div className="group relative bg-card rounded-2xl border border-border/50 overflow-hidden hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 h-full flex flex-col cursor-pointer">
+                        {/* Premium Badge */}
+                        {medicine.rating >= 4.5 && (
+                          <div className="absolute top-4 right-4 z-10 bg-gradient-to-r from-primary to-accent px-3 py-1 rounded-full">
+                            <span className="text-xs font-bold text-primary-foreground">⭐ Premium</span>
+                          </div>
+                        )}
+
+                        {/* Medicine Image Area */}
+                        <div className="p-8 bg-gradient-to-br from-primary/5 to-accent/5 flex items-center justify-center min-h-48 group-hover:from-primary/10 group-hover:to-accent/10 transition-colors">
+                          <div className="text-5xl group-hover:scale-110 transition-transform duration-300">💊</div>
+                        </div>
+
+                        {/* Medicine Info */}
+                        <div className="p-6 flex-1 flex flex-col">
+                          <h3 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                            {medicine.name}
+                          </h3>
+
+                          <p className="text-xs text-muted-foreground mb-3">{medicine.manufacturer}</p>
+
+                          {/* Rating */}
+                          <div className="flex items-center gap-2 mb-4">
+                            <div className="flex gap-0.5">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`w-3 h-3 ${i < Math.floor(medicine.rating) ? 'fill-accent text-accent' : 'text-muted'}`}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-xs text-muted-foreground">{medicine.rating}</span>
+                          </div>
+
+                          <p className="text-sm text-muted-foreground mb-4 flex-1 line-clamp-2">
+                            {medicine.description}
+                          </p>
+
+                          {/* Prescription Badge */}
+                          {medicine.requiresPrescription && (
+                            <div className="mb-3 px-3 py-1 bg-accent/10 border border-accent/30 rounded-lg">
+                              <p className="text-xs font-semibold text-accent">Prescription Required</p>
+                            </div>
+                          )}
+
+                          {/* Footer with Price and Stock */}
+                          <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                            <div>
+                              <p className="text-sm text-muted-foreground">Price</p>
+                              <p className="text-2xl font-bold text-primary">₹{medicine.price}</p>
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault()
+                                handleAddToCart(medicine)
+                              }}
+                              className={`p-3 rounded-lg transition-all duration-300 ${
+                                addedItems.has(medicine.id)
+                                  ? 'bg-accent text-accent-foreground'
+                                  : 'bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground'
+                              }`}
+                            >
+                              <ShoppingCart className="w-5 h-5" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-16">
+                  <p className="text-lg text-muted-foreground mb-6">No medicines found matching your criteria.</p>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setSearchQuery('')
+                      setSelectedCategory('All Categories')
+                      setPriceRange([0, 5000])
+                    }}
+                  >
+                    Clear All Filters
+                  </Button>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </>
-  );
+  )
 }
