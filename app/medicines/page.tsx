@@ -49,7 +49,7 @@ export default function MedicinesPage() {
       alert('Please login to add items to cart')
       return
     }
-    addToCart(medicine, 1)
+    addToCart(medicine.id, 1, medicine.price)
     setAddedItems(prev => new Set(prev).add(medicine.id))
     setTimeout(() => {
       setAddedItems(prev => {
@@ -170,69 +170,67 @@ export default function MedicinesPage() {
               {filteredMedicines.length > 0 ? (
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredMedicines.map(medicine => (
-                    <Link key={medicine.id} href={`/medicines/detail?id=${medicine.id}`}>
-                      <div className="group relative bg-card rounded-2xl border border-border/50 overflow-hidden hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 h-full flex flex-col cursor-pointer">
-                        {medicine.rating >= 4.5 && (
-                          <div className="absolute top-4 right-4 z-10 bg-gradient-to-r from-primary to-accent px-3 py-1 rounded-full">
-                            <span className="text-xs font-bold text-primary-foreground">Premium</span>
+                    <div key={medicine.id} className="group relative bg-card rounded-2xl border border-border/50 overflow-hidden hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 h-full flex flex-col cursor-pointer">
+                      {medicine.rating >= 4.5 && (
+                        <div className="absolute top-4 right-4 z-10 bg-gradient-to-r from-primary to-accent px-3 py-1 rounded-full">
+                          <span className="text-xs font-bold text-primary-foreground">Premium</span>
+                        </div>
+                      )}
+
+                      <div className="p-8 bg-gradient-to-br from-primary/5 to-accent/5 flex items-center justify-center min-h-48 group-hover:from-primary/10 group-hover:to-accent/10 transition-colors">
+                        <div className="text-5xl group-hover:scale-110 transition-transform duration-300">💊</div>
+                      </div>
+
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                          {medicine.name}
+                        </h3>
+
+                        <p className="text-xs text-muted-foreground mb-3">{medicine.manufacturer}</p>
+
+                        <div className="flex items-center gap-2 mb-4">
+                          <div className="flex gap-0.5">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`w-3 h-3 ${i < Math.floor(medicine.rating) ? 'fill-accent text-accent' : 'text-muted'}`}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-xs text-muted-foreground">{medicine.rating}</span>
+                        </div>
+
+                        <p className="text-sm text-muted-foreground mb-4 flex-1 line-clamp-2">
+                          {medicine.description}
+                        </p>
+
+                        {medicine.requiresPrescription && (
+                          <div className="mb-3 px-3 py-1 bg-accent/10 border border-accent/30 rounded-lg">
+                            <p className="text-xs font-semibold text-accent">Prescription Required</p>
                           </div>
                         )}
 
-                        <div className="p-8 bg-gradient-to-br from-primary/5 to-accent/5 flex items-center justify-center min-h-48 group-hover:from-primary/10 group-hover:to-accent/10 transition-colors">
-                          <div className="text-5xl group-hover:scale-110 transition-transform duration-300">💊</div>
-                        </div>
-
-                        <div className="p-6 flex-1 flex flex-col">
-                          <h3 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                            {medicine.name}
-                          </h3>
-
-                          <p className="text-xs text-muted-foreground mb-3">{medicine.manufacturer}</p>
-
-                          <div className="flex items-center gap-2 mb-4">
-                            <div className="flex gap-0.5">
-                              {Array.from({ length: 5 }).map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`w-3 h-3 ${i < Math.floor(medicine.rating) ? 'fill-accent text-accent' : 'text-muted'}`}
-                                />
-                              ))}
-                            </div>
-                            <span className="text-xs text-muted-foreground">{medicine.rating}</span>
+                        <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                          <div>
+                            <p className="text-sm text-muted-foreground">Price</p>
+                            <p className="text-2xl font-bold text-primary">₹{medicine.price}</p>
                           </div>
-
-                          <p className="text-sm text-muted-foreground mb-4 flex-1 line-clamp-2">
-                            {medicine.description}
-                          </p>
-
-                          {medicine.requiresPrescription && (
-                            <div className="mb-3 px-3 py-1 bg-accent/10 border border-accent/30 rounded-lg">
-                              <p className="text-xs font-semibold text-accent">Prescription Required</p>
-                            </div>
-                          )}
-
-                          <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                            <div>
-                              <p className="text-sm text-muted-foreground">Price</p>
-                              <p className="text-2xl font-bold text-primary">₹{medicine.price}</p>
-                            </div>
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault()
-                                handleAddToCart(medicine)
-                              }}
-                              className={`p-3 rounded-lg transition-all duration-300 ${
-                                addedItems.has(medicine.id)
-                                  ? 'bg-accent text-accent-foreground'
-                                  : 'bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground'
-                              }`}
-                            >
-                              <ShoppingCart className="w-5 h-5" />
-                            </button>
-                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault()
+                              handleAddToCart(medicine)
+                            }}
+                            className={`p-3 rounded-lg transition-all duration-300 ${
+                              addedItems.has(medicine.id)
+                                ? 'bg-accent text-accent-foreground'
+                                : 'bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground'
+                            }`}
+                          >
+                            <ShoppingCart className="w-5 h-5" />
+                          </button>
                         </div>
                       </div>
-                    </Link>
+                    </div>
                   ))}
                 </div>
               ) : (
